@@ -4,6 +4,7 @@ package main
 
 import (
     "archive/tar"
+    "compress/gzip"
     "io"
     "path/filepath"
     "os"
@@ -16,11 +17,30 @@ func init() {
             0x101,
             []byte{0x75,0x73,0x74,0x61,0x72,0x00,0x30,0x30},
         ),
-        untar,
+        untarWrap,
     })
+    ArchiveIndex = append(ArchiveIndex, ArchiveType{
+        "tar.gz",
+        checkMagic(
+            0,
+            []byte{0x1F, 0x8B},
+        ),
+        untargz,
+   })
 }
 
-func untar(f *os.File, target string) {
+func untargz(f *os.File, target string) {
+    gz, err := gzip.NewReader(f)
+    check(err)
+    untar(gz, target)
+    gz.Close()
+}
+
+func untarWrap(f *os.File, target string) {
+    untar(f, target)
+}
+
+func untar(f io.Reader, target string) {
     tr := tar.NewReader(f)
 
     for {
