@@ -4,8 +4,13 @@ import (
     "os"
     "bytes"
     "io"
-    "fmt"
+    "log"
 )
+
+func init() {
+    log.SetPrefix(os.Args[0] + ": ")
+    log.SetFlags(0)
+}
 
 type DecompressionCheck func (f *os.File) bool
 type Decompressor func (f *os.File, target string)
@@ -18,18 +23,15 @@ type ArchiveType struct {
 
 func check(e error) {
     if e != nil {
-        panic(e)
+        log.Fatal(e)
     }
 }
-
-
 
 var ArchiveIndex []ArchiveType
 
 func main() {
     if len(os.Args) < 3 {
-        fmt.Println("usage: pressure source target")
-        return
+        log.Fatal("usage: pressure source target")
     }
     f, err := os.Open(os.Args[1])
     check(err)
@@ -40,7 +42,7 @@ func main() {
             return
         }
     }
-    fmt.Println("No decompressor available")
+    log.Fatal("No decompressor available for file " + os.Args[1])
 }
 
 // Generates a function that checks magic values at a certain offset
