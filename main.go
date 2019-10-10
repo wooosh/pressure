@@ -39,7 +39,7 @@ var ArchiveIndex []ArchiveType
 
 func main() {
     if len(os.Args) < 3 {
-        log.Fatal("usage: pressure source target")
+        log.Fatal("usage: " + os.Args[0] + " source target")
     }
     f, err := os.Open(os.Args[1])
     check(err)
