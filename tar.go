@@ -46,35 +46,38 @@ func tarFile(f string, target string, gzip bool) {
 
     tw := tar.NewWriter(archive)
 
-    err = filepath.Walk(f, func(path string, info os.FileInfo, err error) error {
-        if err != nil  {
-            log.Println(err)
+    err = filepath.Walk(f,
+        func(path string, info os.FileInfo, err error) error {
+            if err != nil  {
+                log.Println(err)
+                return nil
+            }
+            if !info.Mode().IsRegular() {
+                return nil
+            }
+
+            file, err := os.Open(path)
+            check(err)
+            defer file.Close()
+
+            header, err := tar.FileInfoHeader(info, info.Name())
+            check(err)
+
+            header.Name = strings.TrimPrefix(
+                strings.Replace(path, f, "", -1),
+                string(filepath.Separator))
+
+            if header.Name == "" {
+                return nil
+            }
+
+            err = tw.WriteHeader(header)
+            check(err)
+
+            _, err = io.Copy(tw, file)
+            check(err)
+
             return nil
-        }
-        if !info.Mode().IsRegular() {
-            return nil
-        }
-
-        file, err := os.Open(path)
-        check(err)
-        defer file.Close()
-
-        header, err := tar.FileInfoHeader(info, info.Name())
-        check(err)
-
-        header.Name = strings.TrimPrefix(strings.Replace(path, f, "", -1), string(filepath.Separator))
-
-        if header.Name == "" {
-            return nil
-        }
-
-        err = tw.WriteHeader(header)
-        check(err)
-
-        _, err = io.Copy(tw, file)
-        check(err)
-
-        return nil
     })
     check(err)
     check(tw.Close())
@@ -93,7 +96,7 @@ func untarWrap(f *os.File, target string) {
 
 func untar(f io.Reader, target string) {
     tr := tar.NewReader(f)
-    
+
     err := os.MkdirAll(target, os.ModePerm)
     check(err)
 

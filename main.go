@@ -73,7 +73,8 @@ func checkMagic(offset int64, sequence []byte) DecompressionCheck {
 }
 
 // Generates a function that checks file extension
-// We take a slice of strings because formats like zip have many different names (jar, epub, docx etc)
+// We take a slice of strings because formats like 
+// zip have many different names (jar, epub, docx etc)
 func checkExt(extensions []string) CompressionCheck {
     return func (filename string) bool {
         for _, ext := range extensions {
