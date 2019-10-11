@@ -1,0 +1,29 @@
+.TH PRESSURE 1 "2019 October 11" "" ""
+
+.SH NAME
+pressure \- a utility for easy compression and decompression
+
+.SH SYNPOSIS
+.B pressure
+.I ARCHIVE DESTINATION
+
+.B pressure
+.I FILE... ARCHIVE
+
+.SH EXAMPLES
+.B pressure
+.I file.tar outputdir
+
+.B pressure
+.I code.zip code
+
+.B pressure
+.I code code.zip
+
+.B pressure
+.I src assets tests test.zip
+
+.SH BUGS
+Pressure currently only supports the tar format.
+More formats are planned to be implemented.
+Compressing multiple files into one archive isn't currently implemented either.
